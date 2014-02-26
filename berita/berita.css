@@ -1,0 +1,16 @@
+
+#tampil_data {
+	color: #000000;
+	background-color: #FFFFFF;
+	font-size: 9px;
+	font-family: Arial;
+	padding: 0px 0px;
+}
+
+#tampil_data a:link, #tampil_data a:visited {
+	color: #333399;
+	text-decoration: none;
+}
+#tampil_data a:hover {
+	color: #FF0000;
+}

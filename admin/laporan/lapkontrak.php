@@ -1,0 +1,93 @@
+<?php
+include "conn.php";
+$koneksi=open_connection();
+//untuk core PDF
+require('fpdf.php');
+
+class PDF extends FPDF
+{
+	function Header()
+	{
+		//Select Arial bold 15
+		$this->SetFont('Arial','B',15);
+		//Move to the right
+		$this->Cell(80);
+		//Framed title
+		
+		$judul='Laporan Kontrak';
+		
+		$this->Cell(50,10,$judul,0,0,'C');
+		//Line break
+		$this->Ln(20);
+		
+	}
+
+
+	//Colored table
+	function tabel_ri32_color()
+	{
+		//Queri untuk Menampilkan data
+		$query ="SELECT * FROM   trkontrak order by kodekontrak asc";
+		$db_query = mysql_query($query) or die("Query gagal");
+
+		//Column titles
+		$header=array('kodekontrak','tglkontrak','kodeorder','kodecust','namacust','namaalat','hargasewa','lamasewa','jmlbiaya','totalbiaya');
+		
+		//Colors, line width and bold font
+		$this->SetFillColor(255,0,0);
+		$this->SetTextColor(255);
+		$this->SetDrawColor(128,0,0);
+		$this->SetLineWidth(.3);
+		$this->SetFont('','B');
+		
+		//Title table
+		//$this->Cell(20,30,'Title',1,0,'C');
+		
+		//Header
+		$w=array(15,15,15,15,35,20,30,30,30,30,30);
+		for($i=0;$i<count($header);$i++)
+			$this->Cell($w[$i],11,$header[$i],1,0,'C',true);
+		$this->Ln();
+		
+		//Color and font restoration
+		$this->SetFillColor(224,235,255);
+		$this->SetTextColor(0);
+		$this->SetFont('');
+		
+		//Data
+		$fill=false;
+		
+		//$this->Cell(-10,-20,'Enjoy new fonts with FPDF!');
+		
+		while($data=mysql_fetch_array($db_query))
+		{
+			$this->Cell($w[0],11,$data['kodekontrak'],'LR',0,'C',$fill);
+			$this->Cell($w[1],11,$data['tglkontrak'],'LR',0,'L',$fill);
+			$this->Cell($w[2],11,$data['kodeorder'],'LR',0,'C',$fill);
+			$this->Cell($w[3],11,$data['kodecust'],'LR',0,'C',$fill);
+			$this->Cell($w[4],11,$data['namacust'],'LR',0,'C',$fill);
+			$this->Cell($w[5],11,$data['namaalat'],'LR',0,'C',$fill);
+			$this->Cell($w[6],11,$data['hargasewa'],'LR',0,'C',$fill);
+			$this->Cell($w[7],11,$data['lamasewa'],'LR',0,'C',$fill);
+			$this->Cell($w[8],11,$data['jmlbiaya'],'LR',0,'C',$fill);
+			$this->Cell($w[9],11,$data['totalbiaya'],'LR',0,'C',$fill);
+			$this->Ln();
+			$fill=!$fill;
+		}
+		
+		$this->Cell(array_sum($w),10,'Copyright (c) 2013 PT Altrak 1978','T');
+	}
+}
+//posisi kertas, ukuran kertas
+$pdf = new PDF('L','mm','A4');
+$title='Laporan Kontrak';
+$pdf->SetTitle($title);
+$pdf->SetAuthor('Yosep');
+
+$pdf->SetFont('Arial','',12);
+$pdf->AddPage();
+//memanggil fungsi table
+$pdf->tabel_ri32_color();
+$pdf->Output();
+?>
+
